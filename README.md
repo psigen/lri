@@ -1,4 +1,4 @@
 lri
 ===
 
-Lightweight Robotics IPC library
+lri is a Lightweight Robotics IPC library.
