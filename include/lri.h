@@ -1,7 +1,8 @@
-namespace lri
-{
-  class LRI 
-  {
+#ifndef LRI_INCLUDE_LRI_H_
+#define LRI_INCLUDE_LRI_H_
+
+namespace lri {
+  class LRI {
  public:
     LRI(std::string network);
     ~LRI();
@@ -10,31 +11,31 @@ namespace lri
      * Creates a publisher object which pushes events to a given topic.
      */
     template<typename MessageType>
-        Publisher<MessageType> publisher(std::string topic);
+        Publisher<MessageType> Publish(std::string topic);
     
     /**
      * Creates a subscriber object which listens for changes on a given topic.
      */
     template<typename MessageType>
-        Subscriber<MessageType> subscriber(std::string topic);
+        Subscriber<MessageType> Subscribe(std::string topic);
     template<typename MessageType>
-        Subscriber<MessageType> subscriber(std::string topic, SubscriberCallback<MessageType> callback);
+        Subscriber<MessageType> Subscribe(std::string topic, SubscriberCallback<MessageType> callback);
     
     /**
      * Creates a monitored object for which changes are propagated to subscribers.
      */
     template<typename MessageType>
-        Monitor<MessageType> share(std::string topic);
+        Monitor<MessageType> Share(std::string topic);
     template<typename MessageType>
-        Monitor<MessageType> share(std::string topic, double maxHz = 0.0);
+        Monitor<MessageType> Share(std::string topic, double maxHz = 0.0);
     
     /**
      * Creates a proxy state that replicates changes from the subscriber.
      */
     template<typename MessageType>
-        Proxy<MessageType> replicate(std::string topic);
+        Proxy<MessageType> Replicate(std::string topic);
     template<typename MessageType>
-        Proxy<MessageType> replicate(std::string topic, double maxHz = 0.0);
+        Proxy<MessageType> Replicate(std::string topic, double maxHz = 0.0);
   };
 
   /**
@@ -42,8 +43,7 @@ namespace lri
    * topic gets a new event.
    */
   template<typename MessageType> 
-      class Subscriber
-  {
+      class Subscriber {
  public:
     void listen(SubscriberCallback<MessageType> callback);
     void shutdown();
@@ -54,8 +54,7 @@ namespace lri
    * is called with a message.
    */
   template<typename MessageType>
-      class Publisher
-  {
+      class Publisher {
  public:
     void publish(MessageType message);
     void shutdown(void);
@@ -67,8 +66,7 @@ namespace lri
    * automatically at some maximum fixed rate.
    */
   template<typename MessageType>
-      class Monitor
-  {
+      class Monitor {
  public:
     void setMaxRate(double Hz);
     void commit(void);
@@ -89,3 +87,6 @@ namespace lri
     void shutdown(void);
   };
 }
+
+#endif  // LRI_INCLUDE_LRI_H_
+
