@@ -1,17 +1,15 @@
 package lri;
 
 message QueryTopic {
-  // The host name of the computer that the publisher wishes to subscribe to.
-  // Example: "neontetra.coral.cs.cmu.edu"
-  optional string host_name = 1;
-
-  // The "group" to join, for the case where multiple users are running their
-  // own versions of the same node. Each user will be using a different group 
-  // ID. If left blank, the anonymous group is assumed.
-  // Example: "joydeepb"
-  optional string group_name = 2;
+  // The "group" to join, in the form "lri://hostname/setname" where hostname
+  // is the fully qualified domain name for the computer, and setname is the
+  // name of a set on that computer. If the hostname is blank, then it means
+  // that the subscriber is willing to subscribe to any node on any computer
+  // on the network. Similarly for setname.
+  // Example: "lri://neontetra.coral.cs.cmu.edu/joydeepb"
+  optional string group_name = 1;
 
   // The name of the topic being announced.
   // Example: "/base_laser"
-  optional string topic_name = 3;
+  optional string topic_name = 2;
 }
