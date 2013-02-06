@@ -1,0 +1,27 @@
+package lri;
+
+message AnnounceTopic {
+  // The host name of the computer from which this is sent (included for
+  // symmetry with QueryTopic).
+  // Example: "neontetra.coral.cs.cmu.edu"
+  optional string host_name = 1;
+
+  // The "group" to join, for the case where multiple users are running
+  // their own versions of the same node. Each user will be using a different
+  // group ID. If left blank (default), the anonymous group is assumed.
+  // Example: "joydeepb"
+  optional string group_name = 2;
+
+  // The name of the node announcing to publish to this topic.
+  // Example: "base_laser_driver"
+  optional string node_name = 3;
+
+  // The name of the topic being announced.
+  // Example: "/base_laser"
+  optional string topic_name = 4;
+
+  // TCP port number of the publisher data server. Subscribers will connect to
+  // this port to receive data from the publisher.
+  // Example: 8552
+  optional int32 tcp_port = 5;
+}
