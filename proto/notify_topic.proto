@@ -1,21 +1,20 @@
 package lri;
 
 message NotifyTopic {
-  // The host name of the computer that this notification is addressed to.
-  // Example: "neontetra.coral.cs.cmu.edu"
-  optional string host_name = 1;
-
-  // The group that this notification is addressed to.
-  // Example: "joydeepb"
-  optional string group_name = 2;
+  // The "group" to notify, in the form "lri://hostname/setname" where hostname
+  // is the fully qualified domain name for the computer, and setname is the
+  // name of a set on that computer. If the setname is blank, then it is 
+  // assumed to be anonymous.
+  // Example: "lri://neontetra.coral.cs.cmu.edu/joydeepb"
+  optional string group_name = 1;
 
   // The name of the topic that this notification refers to.
   // Example: "/base_laser"
-  optional string topic_name = 3;
+  optional string topic_name = 2;
 
   // The name of the node that this notification is addressed to.
   // Example: "base_laser_driver"
-  optional string node_name = 4;
+  optional string node_name = 3;
 
   enum NotificationType {
     // A courtesy notification that this publisher is about to terminate.
@@ -27,5 +26,5 @@ message NotifyTopic {
     // "event" topic.
     ILLEGAL_ANNOUNCEMENT = 2;
   }
-  optional NotificationType notification_type = 5;
+  optional NotificationType notification_type = 4;
 }
