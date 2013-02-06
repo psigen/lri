@@ -35,6 +35,26 @@ namespace lri
         Proxy<MessageType> replicate(std::string topic);
     template<typename MessageType>
         Proxy<MessageType> replicate(std::string topic, double maxHz = 0.0);
+
+    /**
+     * Processes messages and callbacks on the current foreground thread.
+     */
+    void spin(void);
+
+    /**
+     * Starts a background thread pool that will process messages and callbacks.
+     */
+    void start(void);
+
+    /**
+     * Stops a background thread pool to process messages and callbacks.
+     */
+    void stop(void);
+
+    /**
+     * Returns whether the background thread pool is running.
+     */
+    bool isRunning(void);
   };
 
   /**
@@ -45,10 +65,13 @@ namespace lri
       class Subscriber
   {
  public:
-    void listen(SubscriberCallback<MessageType> callback);
-    void shutdown();
-  };
+    void listen(SubscriberCallback callback);
+    void shutdown(void);
 
+    /** Defines a callback function that will receive this message type */
+    typedef void (*SubscriberCallback)(Subscriber<MessageType> &source, const MessageType &message);
+  };
+  
   /**
    * A publisher is connected to a particular topic and sends out an event when it
    * is called with a message.
