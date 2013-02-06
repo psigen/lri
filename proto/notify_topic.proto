@@ -23,7 +23,8 @@ message NotifyTopic {
     // A courtesy notification that this subscriber is about to terminate.
     SUBSCRIBER_TERMINATION = 1;
     // Notify a particular node that it cannot publish to the specified topic.
-    // This could be because the topic in question is a "state" topic, not an "event" topic.
+    // This could be because the topic in question is a "state" topic, not an
+    // "event" topic.
     ILLEGAL_ANNOUNCEMENT = 2;
   }
   optional NotificationType notification_type = 5;

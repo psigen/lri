@@ -5,9 +5,9 @@ message QueryTopic {
   // Example: "neontetra.coral.cs.cmu.edu"
   optional string host_name = 1;
 
-  // The "group" to join, for the case where multiple users are running their own versions of the 
-  // same node. Each user will be using a different group ID. If left blank (default), the 
-  // anonymous group is assumed.
+  // The "group" to join, for the case where multiple users are running their
+  // own versions of the same node. Each user will be using a different group 
+  // ID. If left blank, the anonymous group is assumed.
   // Example: "joydeepb"
   optional string group_name = 2;
 
