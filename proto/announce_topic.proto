@@ -11,12 +11,16 @@ message AnnounceTopic {
   // Example: "joydeepb"
   optional string group_name = 2;
 
+  // The name of the node announcing to publish to this topic.
+  // Example: "base_laser_driver"
+  optional string node_name = 3;
+
   // The name of the topic being announced.
   // Example: "/base_laser"
-  optional string topic_name = 3;
+  optional string topic_name = 4;
 
   // TCP port number of the publisher data server. Subscribers will connect to this port to receive
   // data from the publisher.
   // Example: 8552
-  optional int32 tcp_port = 4;
+  optional int32 tcp_port = 5;
 }
