@@ -1,6 +1,6 @@
 package lri;
 
-message AnnounceTopic {
+message TopicPublisher {
   // The "group" to join, in the form "lri://hostname/setname" where hostname
   // is the fully qualified domain name for the computer, and setname is the
   // name of a set on that computer. If the setname is blank, then it is 
