@@ -121,7 +121,7 @@ template<typename MessageType> class Proxy {
   const LRI& lri();
 };
 
-}  // namespace LRI;
+}  // namespace lri
 
 #endif  // LRI_INCLUDE_LRI_H_
 
