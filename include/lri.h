@@ -1,115 +1,127 @@
+#include <string>
+
 #ifndef LRI_INCLUDE_LRI_H_
 #define LRI_INCLUDE_LRI_H_
 
 namespace lri {
-  class LRI {
+class LRI {
  public:
-    LRI(std::string network);
-    ~LRI();
-    
-    /**
-     * Creates a publisher object which pushes events to a given topic.
-     */
-    template<typename MessageType>
-        Publisher<MessageType> Publish(std::string topic);
-    
-    /**
-     * Creates a subscriber object which listens for changes on a given topic.
-     */
-    template<typename MessageType>
-        Subscriber<MessageType> Subscribe(std::string topic);
-    template<typename MessageType>
-        Subscriber<MessageType> Subscribe(std::string topic, SubscriberCallback<MessageType> callback);
-    
-    /**
-     * Creates a monitored object for which changes are propagated to subscribers.
-     */
-    template<typename MessageType>
-        Monitor<MessageType> Share(std::string topic);
-    template<typename MessageType>
-        Monitor<MessageType> Share(std::string topic, double maxHz = 0.0);
-    
-    /**
-     * Creates a proxy state that replicates changes from the subscriber.
-     */
-    template<typename MessageType>
-        Proxy<MessageType> Replicate(std::string topic);
-    template<typename MessageType>
-        Proxy<MessageType> Replicate(std::string topic, double maxHz = 0.0);
-
-    /**
-     * Processes messages and callbacks on the current foreground thread.
-     */
-    void spin(void);
-
-    /**
-     * Starts a background thread pool that will process messages and callbacks.
-     */
-    void start(void);
-
-    /**
-     * Stops a background thread pool to process messages and callbacks.
-     */
-    void stop(void);
-
-    /**
-     * Returns whether the background thread pool is running.
-     */
-    bool isRunning(void);
-  };
-
-  /**
-   * A subscriber listens to a particular topic and calls its callback function when the
-   * topic gets a new event.
-   */
-  template<typename MessageType> 
-      class Subscriber {
- public:
-    void listen(SubscriberCallback callback);
-    void shutdown(void);
-
-    /** Defines a callback function that will receive this message type */
-    typedef void (*SubscriberCallback)(Subscriber<MessageType> &source, const MessageType &message);
-  };
+  LRI(std::string group);
+  ~LRI();
   
   /**
-   * A publisher is connected to a particular topic and sends out an event when it
-   * is called with a message.
+   * Creates a publisher object which pushes events to a given topic.
    */
   template<typename MessageType>
-      class Publisher {
- public:
-    void publish(MessageType message);
-    void shutdown(void);
-  };
+      Publisher<MessageType> Publish(const std::string& topic);
+  
+  /**
+   * Creates a subscriber object which listens for changes on a given topic.
+   */
+  template<typename MessageType>
+      Subscriber<MessageType> Subscribe(const std::string& topic);
+  template<typename MessageType>
+      Subscriber<MessageType> Subscribe(
+          const std::string& topic, SubscriberCallback<MessageType> callback);
+  
+  /**
+   * Creates a monitored object for which changes are propagated to
+   * subscribers. Used for publishing the state of the monitored object. For
+   * example, this could be used to monitor a joint angle, and when the value
+   * of the joint angle changed, the change would be propagated to the 
+   * subscribers.
+   */
+  template<typename MessageType>
+      Monitor<MessageType> Share(const std::string& topic);
+  template<typename MessageType>
+      Monitor<MessageType> Share(const std::string& topic, double max_hz);
+  
+  /**
+   * Creates a proxy state that replicates changes from the publisher.
+   */
+  template<typename MessageType>
+      Proxy<MessageType> Replicate(const std::string& topic);
+  template<typename MessageType>
+      Proxy<MessageType> Replicate(const std::string& topic, double max_hz);
 
   /**
-   * A monitor wraps a given message, turning it into a shared state.  It monitors changes in
-   * the object, and sends state updates to subscribers when commit() is called, or
-   * automatically at some maximum fixed rate.
+   * Processes messages and callbacks on the current foreground thread.
    */
-  template<typename MessageType>
-      class Monitor {
- public:
-    void setMaxRate(double Hz);
-    void commit(void);
-    void shutdown(void);
-  };
+  void Update(void);
 
   /**
-   * A proxy wraps a given message, turning it into shared state.  It provides const-access
-   * to message fields, and updates them automatically from the publisher either when
-   * refresh is called or at some maximum fixed rate.
+   * Starts a background thread pool that will process messages and callbacks.
    */
-  template<typename MessageType>
-      class Proxy
-  {
+  void Start(void);
+
+  /**
+   * Stops a background thread pool to process messages and callbacks.
+   */
+  void Stop(void);
+
+  /**
+   * Returns whether the background thread pool is running.
+   */
+  bool IsRunning(void);
+
+  /**
+   * Returns the LRI group URI that this LRI instance is using.
+   */
+  const char& group();
+};
+
+/**
+ * A subscriber listens to a particular topic and calls its callback function when the
+ * topic gets a new event.
+ */
+template<typename MessageType> class Subscriber {
  public:
-    void setMaxRate(double Hz);
-    void commit(void);
-    void shutdown(void);
-  };
-}
+  void Listen(SubscriberCallback callback);
+  void Shutdown(void);
+  const LRI& lri();
+
+  /** Defines a callback function that will receive this message type */
+  typedef void (*SubscriberCallback)(const Subscriber<MessageType>& source, 
+      const MessageType& message);
+};
+
+/**
+ * A publisher is connected to a particular topic and sends out an event when it
+ * is called with a message.
+ */
+template<typename MessageType> class Publisher {
+ public:
+  void Publish(const MessageType& message);
+  void Shutdown(void);
+  const LRI& lri();
+};
+
+/**
+ * A monitor wraps a given message, turning it into a shared state.  It monitors changes in
+ * the object, and sends state updates to subscribers when commit() is called, or
+ * automatically at some maximum fixed rate.
+ */
+template<typename MessageType> class Monitor {
+ public:
+  void SetMaxRate(double Hz);
+  void Commit(void);
+  void Shutdown(void);
+  const LRI& lri();
+};
+
+/**
+ * A proxy wraps a given message, turning it into shared state.  It provides const-access
+ * to message fields, and updates them automatically from the publisher either when
+ * refresh is called or at some maximum fixed rate.
+ */
+template<typename MessageType> class Proxy {
+ public:
+  void SetMaxRate(double Hz);
+  void Shutdown(void);
+  const LRI& lri();
+};
+
+}  // namespace LRI;
 
 #endif  // LRI_INCLUDE_LRI_H_
 

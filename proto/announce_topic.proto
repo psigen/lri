@@ -6,7 +6,7 @@ message AnnounceTopic {
   // name of a set on that computer. If the setname is blank, then it is 
   // assumed to be anonymous.
   // Example: "lri://neontetra.coral.cs.cmu.edu/joydeepb"
-  optional string group_name = 1;
+  optional string group = 1;
 
   // The name of the node announcing to publish to this topic.
   // Example: "base_laser_driver"

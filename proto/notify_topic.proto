@@ -6,7 +6,7 @@ message NotifyTopic {
   // name of a set on that computer. If the setname is blank, then it is 
   // assumed to be anonymous.
   // Example: "lri://neontetra.coral.cs.cmu.edu/joydeepb"
-  optional string group_name = 1;
+  optional string group = 1;
 
   // The name of the topic that this notification refers to.
   // Example: "/base_laser"
