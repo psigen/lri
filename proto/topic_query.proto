@@ -1,0 +1,15 @@
+package lri;
+
+message QueryTopic {
+  // The "group" to join, in the form "lri://hostname/setname" where hostname
+  // is the fully qualified domain name for the computer, and setname is the
+  // name of a set on that computer. If the hostname is blank, then it means
+  // that the subscriber is willing to subscribe to any node on any computer
+  // on the network. Similarly for setname.
+  // Example: "lri://neontetra.coral.cs.cmu.edu/joydeepb"
+  optional string group = 1;
+
+  // The name of the topic being announced.
+  // Example: "/base_laser"
+  optional string topic_name = 2;
+}
