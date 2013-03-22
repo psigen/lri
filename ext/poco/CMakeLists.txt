@@ -10,7 +10,7 @@ ExternalProject_Add(poco_EXTERNAL
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
     UPDATE_COMMAND ""
     CONFIGURE_COMMAND <SOURCE_DIR>/configure --no-tests --no-samples --static --shared --prefix=<INSTALL_DIR>
-    BUILD_COMMAND make POCO_BASE=<SOURCE_DIR>
+    BUILD_COMMAND make POCO_BASE=<SOURCE_DIR> POCO_TARGET_OSNAME=${CMAKE_SYSTEM_NAME} POCO_TARGET_OSARCH=${CMAKE_SYSTEM_PROCESSOR}
     BUILD_IN_SOURCE 1
     INSTALL_COMMAND make install
 )
@@ -23,7 +23,7 @@ ExternalProject_Get_Property(poco_EXTERNAL SOURCE_DIR BINARY_DIR INSTALL_DIR)
 add_library(poco UNKNOWN IMPORTED)
 set_property(TARGET poco
   PROPERTY IMPORTED_LOCATION
-  ${INSTALL_DIR}/lib/libpoco.a
+  ${INSTALL_DIR}/lib/libPocoFoundation.a
   )
 add_dependencies(poco poco_EXTERNAL)
 
@@ -34,12 +34,15 @@ set(poco_FOUND
 )
 
 set(poco_INCLUDE_DIRS 
-  "${INSTALL_DIR}/Foundation/include"
+  "${INSTALL_DIR}/include"
   CACHE INTERNAL "" FORCE
 )
 
 set(poco_LIBRARIES
-  "${INSTALL_DIR}/lib/libpoco.a"
+  "${INSTALL_DIR}/lib/libPocoFoundation.a"
+  "${INSTALL_DIR}/lib/libPocoNet.a"
+  "${INSTALL_DIR}/lib/libPocoUtil.a"
+  "${INSTALL_DIR}/lib/libPocoXML.a"
   CACHE INTERNAL "" FORCE
 )
 

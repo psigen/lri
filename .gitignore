@@ -22,4 +22,4 @@ config.make
 build/
 
 # Generated build directories
-ext/poco/lib
+ext/poco/src/lib/
