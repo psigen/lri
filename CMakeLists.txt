@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.6)
 
 set(arch ${})
 
+# Compiles externals first
+add_subdirectory(ext)
+
 message(STATUS "Compiling LRI sources...")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Arch: ${CMAKE_SYSTEM_PROCESSOR}")
