@@ -20,6 +20,3 @@
 config.make
 .dep/
 build/
-
-# Generated build directories
-ext/poco/src/lib/
