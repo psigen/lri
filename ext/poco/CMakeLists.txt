@@ -38,8 +38,8 @@ set(poco_INCLUDE_DIRS
 )
 
 set(poco_LIBRARIES
-  "${INSTALL_DIR}/lib/libPocoFoundation.a"
   "${INSTALL_DIR}/lib/libPocoNet.a"
+  "${INSTALL_DIR}/lib/libPocoFoundation.a"
   "${INSTALL_DIR}/lib/libPocoUtil.a"
   "${INSTALL_DIR}/lib/libPocoXML.a"
   CACHE INTERNAL "" FORCE
