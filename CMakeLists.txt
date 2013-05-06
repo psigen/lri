@@ -19,8 +19,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${poco_INCLUDE_DIRS})
 
-set(libs rt)
+set(libs poco)
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
@@ -29,3 +30,8 @@ file(GLOB PROTO_FILES "proto/*.proto")
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
+
+add_executable(udp_server_tester src/test/udp_server_tester.cc)
+add_dependencies(udp_server_tester poco_EXTERNAL)
+target_link_libraries(udp_server_tester ${poco_LIBRARIES})
+
