@@ -1,20 +1,20 @@
-#include "discovery_udp.h"
+#include "discovery/discovery_udp.h"
 
 namespace lri {
 
-DiscoverUDP::DiscoveryUDP() {
+DiscoveryUDP::DiscoveryUDP() {
   // Start a new thread to listen on the UDP multicast.
 }
 
-DiscoverUDP::~DiscoveryUDP() {
+DiscoveryUDP::~DiscoveryUDP() {
   // Terminate UDP multicast listener thread.
 }
 
 void DiscoveryUDP::Query(
-    const std::vector<QueryTopic>& topics, 
+    const std::vector<QueryTopic>& topics,
     std::vector<PublishTopic>* publishers) {
   // Send out multicast QueryTopic packets for every topic.
-  
+
   // Wait for response from peers on the multicast address and return
   // responses.
 }
@@ -22,7 +22,7 @@ void DiscoveryUDP::Query(
 void DiscoveryUDP::Register(const std::vector<PublishTopic>& topics) {
   // Save the list of topics.
   // Announce the topics.
-} 
+}
 
 void DiscoveryUDP::Unregister(const std::vector<PublishTopic>& topics) {
   // Remove the topics from the saved list.

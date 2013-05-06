@@ -18,10 +18,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${poco_INCLUDE_DIRS})
-
-set(libs poco)
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
@@ -33,5 +32,5 @@ target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
 add_executable(udp_server_tester src/test/udp_server_tester.cc)
 add_dependencies(udp_server_tester poco_EXTERNAL)
-target_link_libraries(udp_server_tester ${poco_LIBRARIES})
+target_link_libraries(udp_server_tester ${poco_LIBRARIES} pthread)
 
