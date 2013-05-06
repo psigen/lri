@@ -20,8 +20,12 @@ include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
+
+# Add POCO global dependencies
+add_definitions(${poco_DEFINITIONS})
 include_directories(${poco_INCLUDE_DIRS})
 
+# Set up Protocol Buffers
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -30,7 +34,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
+# Build our own stuff
 add_executable(udp_server_tester src/test/udp_server_tester.cc)
 add_dependencies(udp_server_tester poco_EXTERNAL)
-target_link_libraries(udp_server_tester ${poco_LIBRARIES} pthread)
-
+target_link_libraries(udp_server_tester ${poco_LIBRARIES})
