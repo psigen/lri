@@ -42,10 +42,10 @@ set(poco_LIBRARIES
   "${INSTALL_DIR}/lib/libPocoFoundation.a"
   "${INSTALL_DIR}/lib/libPocoUtil.a"
   "${INSTALL_DIR}/lib/libPocoXML.a"
+  "pthread" # TODO: may have to change this later for Windows
   CACHE INTERNAL "" FORCE
 )
 
 set(poco_DEFINITIONS
-  ""
   CACHE INTERNAL "" FORCE
 )
