@@ -25,15 +25,22 @@ void PocoSender() {
   printf("Poco sender\n");
   Poco::Net::SocketAddress sa(GROUP_ID, PORT_NUMBER);
   Poco::Net::DatagramSocket dgs;
-  const char msg[] = "Hello Poco!";
-  dgs.sendTo(msg, sizeof(msg), sa);
+  while(1) {
+    const char msg[] = "Hello Poco!";
+    dgs.sendTo(msg, sizeof(msg), sa);
+    sleep(1);
+  }
 }
 
 void PocoReceiver() {
   printf("Poco receiver\n");
-  Poco::Net::SocketAddress sa(Poco::Net::IPAddress(), PORT_NUMBER);
-  Poco::Net::DatagramSocket dgs;
-  dgs.bind(sa, true);
+  Poco::Net::SocketAddress sa(GROUP_ID, PORT_NUMBER);
+  Poco::Net::MulticastSocket dgs(
+      Poco::Net::SocketAddress(
+          Poco::Net::IPAddress(), sa.port()
+        )
+  );
+  dgs.joinGroup(sa.host());
   char buffer[1024];
   for (;;)
   {
