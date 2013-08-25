@@ -1,5 +1,6 @@
-# Downloads and installs the latest SFML snapshot
+# Downloads and installs POCO libraries
 cmake_minimum_required(VERSION 2.6)
+project(poco_builder C CXX)
 
 # Add dependency for ExternalProject
 include(ExternalProject)
