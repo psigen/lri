@@ -4,7 +4,11 @@
 #ifndef SRC_DISCOVERY_UDP_DISCOVERY_H_
 #define SRC_DISCOVERY_UDP_DISCOVERY_H_
 
+
 namespace lri {
+
+class Thread;
+class DatagramSocket;
 
 /**
  * Implements discovery by UDP multicast.
@@ -15,27 +19,29 @@ class DiscoveryUDP : public Discovery {
    * Takes in a vector of topics (QueryTopic) that the node is interested in,
    * and returns a vector of publishers that are publishing to those topics.
    */
-  void Query(const std::vector<QueryTopic>& topics,
-                std::vector<PublishTopic>* publishers);
+   void Query(const std::vector<lri::TopicQuery>& topics,
+              std::vector<lri::TopicPublisher>* publishers);
 
   /**
    * Takes in a vector of topics (PublishTopic) that the node is going to
    * publish to, for advertising them and for replying to topic queries.
    */
-  void Register(const std::vector<PublishTopic>& topics);
+  void Register(const std::vector<lri::TopicQuery>& topics);
 
   /**
    * Takes in a vector of topics (PublishTopic) that the node previously
    * was publishing to, but is no longer going to be publishing to.
    */
-  void Unregister(const std::vector<PublishTopic>& topics);
+  void Unregister(const std::vector<lri::TopicQuery>& topics);
 
   void SetCallback(DiscoveryCallback callback);
 
  protected:
-  std::vector<PublishTopic> publishing_topics_;
-  std::vector<QueryTopic> subscribed_topics_;
+  std::vector<lri::TopicQuery> publishing_topics_;
+  std::vector<lri::TopicQuery> subscribed_topics_;
   DiscoveryCallback callback_;
+  Thread* discovery_thread_;
+  DatagramSocket* socket_;
 };
 
 }  // namespace lri
