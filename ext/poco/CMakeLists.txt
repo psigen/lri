@@ -1,11 +1,11 @@
 # Downloads and installs POCO libraries
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.7)
 project(poco_builder C CXX)
 
 # Add dependency for ExternalProject
 include(ExternalProject)
 
-# Download and compile SFML using an external project
+# Download and compile POCO using an external project
 ExternalProject_Add(poco_EXTERNAL
     DOWNLOAD_COMMAND ""
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
