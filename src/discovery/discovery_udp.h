@@ -1,8 +1,8 @@
 #include <vector>
 #include "discovery.h"
 
-#ifndef SRC_DISCOVERY_UDP_DISCOVERY_H_
-#define SRC_DISCOVERY_UDP_DISCOVERY_H_
+#ifndef SRC_DISCOVERY_DISCOVERY_UDP_H_
+#define SRC_DISCOVERY_DISCOVERY_UDP_H_
 
 
 namespace lri {
@@ -19,26 +19,28 @@ class DiscoveryUDP : public Discovery {
    * Takes in a vector of topics (QueryTopic) that the node is interested in,
    * and returns a vector of publishers that are publishing to those topics.
    */
-   void Query(const std::vector<lri::TopicQuery>& topics,
+   void QueryPublishers(const std::vector<lri::TopicQuery>& topics,
               std::vector<lri::TopicPublisher>* publishers);
 
   /**
    * Takes in a vector of topics (PublishTopic) that the node is going to
    * publish to, for advertising them and for replying to topic queries.
    */
-  void Register(const std::vector<lri::TopicQuery>& topics);
+  void RegisterPublisher(const std::vector<lri::TopicQuery>& topics);
 
   /**
    * Takes in a vector of topics (PublishTopic) that the node previously
    * was publishing to, but is no longer going to be publishing to.
    */
-  void Unregister(const std::vector<lri::TopicQuery>& topics);
+  void UnregisterPublisher(const std::vector<lri::TopicQuery>& topics);
 
   void SetCallback(DiscoveryCallback callback);
 
  protected:
   std::vector<lri::TopicQuery> publishing_topics_;
   std::vector<lri::TopicQuery> subscribed_topics_;
+  std::vector<lri::TopicPublisher> topic_publishers_;
+
   DiscoveryCallback callback_;
   Thread* discovery_thread_;
   DatagramSocket* socket_;
@@ -46,5 +48,4 @@ class DiscoveryUDP : public Discovery {
 
 }  // namespace lri
 
-#endif  // SRC_DISCOVERY_UDP_DISCOVERY_H_
-
+#endif  // SRC_DISCOVERY_DISCOVERY_UDP_H_
