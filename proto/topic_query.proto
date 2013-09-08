@@ -1,6 +1,6 @@
 package lri;
 
-message TopicQuery {
+message TopicSubscriber {
   // The "group" to join, in the form "lri://hostname/setname" where hostname
   // is the fully qualified domain name for the computer, and setname is the
   // name of a set on that computer. If the hostname is blank, then it means
