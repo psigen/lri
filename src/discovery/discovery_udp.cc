@@ -14,6 +14,8 @@ static const char* kLriDiscpveryUdpGroup = "225.1.0.37";
 static const Poco::Net::SocketAddress kLriDiscoverySocketAddress(
     kLriDiscpveryUdpGroup, kLriDiscpveryUdpPort);
 
+// A sub-class of Poco::Runnable, defining the background thread that will be
+// used to listen on the UDP multicast for subscription
 class DiscoveryUDPFunction : public Poco::Runnable {
  public:
   DiscoveryUDPFunction() : Poco::Runnable() : run_(true) {}
@@ -57,26 +59,29 @@ DiscoveryUDP::~DiscoveryUDP() {
   // Terminate UDP multicast listener thread.
 }
 
-void DiscoveryUDP::Query(
+void DiscoveryUDP::QueryPublishers(
   const std::vector<TopicQuery>& topics,
     std::vector<TopicPublisher>* publishers) {
-  // Send out multicast QueryTopic packets for every topic.
-  for (size_t i = 0; i < topics.size(); ++i) {
-    
-  }
+  // Add @topics to subscribed_topics_ to keep track of its publishers.
+  // TODO(joydeepb): Check for duplicates.
+  subscribed_topics_.insert(subscribed_topics_.end(), topics.begin(),
+                            topics.end());
 
-  // Wait for response from peers on the multicast address and return
+  // Send out multicast QueryTopic packets for every topic.
+
+  // Wait a bit for response from peers on the multicast address and return
   // responses.
 }
 
-void DiscoveryUDP::Register(const std::vector<TopicQuery>& topics) {
+void DiscoveryUDP::RegisterPublisher(const std::vector<TopicQuery>& topics) {
   // Save the list of topics.
+  // TODO(joydeepb): Check for duplicates.
   publishing_topics_.insert(publishing_topics_.end(), topics.begin(),
                             topics.end());
   // Announce the topics.
 }
 
-void DiscoveryUDP::Unregister(const std::vector<TopicQuery>& topics) {
+void DiscoveryUDP::UnregisterPublisher(const std::vector<TopicQuery>& topics) {
   // Remove the topics from the saved list.
   // Send unregister notice to the multicast address.
 }
