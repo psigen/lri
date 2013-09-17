@@ -15,53 +15,78 @@ class DatagramSocket;
  */
 class DiscoveryUDP : public Discovery {
  public:
-   /**
-   * Takes in a vector of topics (QueryTopic) that the node is interested in,
-   * and returns a vector of publishers that are publishing to those topics.
+  /**
+   * Takes in a vector of topics that the node is interested in, and
+   * subsequently calls the registered callback with a list of known publishers.
    */
-   void QueryPublishers(const std::vector<lri::TopicQuery>& topics,
-              std::vector<lri::TopicPublisher>* publishers);
+  virtual void QueryPublishers(const std::vector<lri::TopicUri>& topics);
 
-   /**
-    * Takes in a vector of topics that the node is publishing to,
-    * and returns a vector of subscribers that are publishing to those topics.
+  /**
+    * Takes in a vector of topics that the node is publishing to, and
+    * subsequentlya calls the registered callback with a list of known
+    * subscribers.
     */
-  virtual void QuerySubscribers(
-    const std::vector<lri::TopicQuery>& topics,
-    std::vector<lri::TopicPublisher>* publishers);
+  virtual void QuerySubscribers(const std::vector<lri::TopicUri>& topics);
 
-   /**
+  /**
   * Takes in a vector of topics that the node is subscribing to, for querying
   * their publishers and for keeping track of their publishers.
   */
-  virtual void RegisterSubscriber(const std::vector<lri::TopicQuery>& topics);
+  virtual void RegisterSubscriber(const std::vector<lri::TopicUri>& topics);
 
   /**
   * Takes in a vector of topics that the node previously was subscribed to,
   * but is no longer interested in subscribing to.
   */
-  virtual void UnregisterSubscriber(const std::vector<lri::TopicQuery>& topics);
+  virtual void UnregisterSubscriber(const std::vector<lri::TopicUri>& topics);
 
   /**
    * Takes in a vector of topics (PublishTopic) that the node is going to
    * publish to, for advertising them and for replying to topic queries.
    */
-  void RegisterPublisher(const std::vector<lri::TopicQuery>& topics);
+  virtual void RegisterPublisher(const std::vector<lri::TopicUri>& topics);
 
   /**
    * Takes in a vector of topics (PublishTopic) that the node previously
    * was publishing to, but is no longer going to be publishing to.
    */
-  void UnregisterPublisher(const std::vector<lri::TopicQuery>& topics);
- 
- void SetCallback(DiscoveryCallback callback);
+  virtual void UnregisterPublisher(const std::vector<lri::TopicUri>& topics);
+
+  /**
+   * Defines a callback function type that will be called when new publishers or
+   * subscribers are discovered for topics of interest.
+   */
+  typedef void (*DiscoveryCallback)(
+      const std::vector<lri::TopicUri>& topics, void* context);
+
+  /**
+   * Register a callback to call when new publishers are discovered for topics
+   * of interest.
+   */
+  virtual void SetPublishersCallback(DiscoveryCallback callback, void* context);
+  
+  /**
+   * Register a callback to call when new subscribers are discovered for topics
+   * of interest.
+   */
+  virtual void SetSubscribersCallback(
+      DiscoveryCallback callback, void* context);
+  
+  /**
+   * Register a callback to call when an error occurs.
+   */
+  // TODO: Define an error callback interface
+  virtual void SetErrorCallback(void* error, void* context);
 
  protected:
   std::vector<lri::TopicQuery> publishing_topics_;
   std::vector<lri::TopicQuery> subscribed_topics_;
   std::vector<lri::TopicPublisher> topic_publishers_;
 
-  DiscoveryCallback callback_;
+  DiscoveryCallback publishers_callback_;
+  DiscoveryCallback subscribers_callback_;
+  void* publishers_callback_context_;
+  void* subscribers_callback_context_;
   Thread* discovery_thread_;
   DatagramSocket* socket_;
 };

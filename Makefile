@@ -3,7 +3,7 @@ BUILD_DIR=build
 CMAKE=cmake
 
 # Build directory
-$(shell mkdir -p $(buildDir))
+$(shell mkdir -p $(BUILD_DIR))
 
 #acceptable BUILD_TYPE: Release/Debug/Profile
 BUILD_TYPE=Release
