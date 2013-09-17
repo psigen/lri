@@ -1,0 +1,1 @@
+make CMAKE=`pwd`/tools/cmake/bin/cmake CMAKE_PREFIX_PATH=`pwd`/tools/protobuf
