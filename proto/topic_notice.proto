@@ -1,3 +1,5 @@
+import "topic_uri.proto";
+
 package lri;
 
 message TopicNotice {

@@ -1,4 +1,4 @@
-import "descriptor.proto";
+import "google/protobuf/descriptor.proto";
 import "topic_uri.proto";
 
 package lri;
@@ -13,9 +13,9 @@ message topic_description {
   //
   // This can be used by DynamicMessage implementations to deserialize messages
   // that were not defined at compile-time for the subscribing node.
-  required FileDescriptorSet protos = 1;
+  required google.protobuf.FileDescriptorSet protos = 1;
 
   // Transport-specific flags that indicate various settings such as 
   // compression, formatting, etc.
-  repeated String flags = 2;
+  repeated string flags = 2;
 }
