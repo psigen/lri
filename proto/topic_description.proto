@@ -1,3 +1,6 @@
+import "descriptor.proto";
+import "topic_uri.proto";
+
 package lri;
 
 // This message describes the format of the subsequent messages received on this
@@ -14,5 +17,5 @@ message topic_description {
 
   // Transport-specific flags that indicate various settings such as 
   // compression, formatting, etc.
-  repeated String flags = 3;
+  repeated String flags = 2;
 }

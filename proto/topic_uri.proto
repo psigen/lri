@@ -28,11 +28,11 @@ message TopicUri {
 
   // LRI-specific transport settings that are used to implement internal 
   // transport overlay mechanisms such as services, state-replication, etc.
-  repeated TopicType type = 2;
+  repeated TopicType type = 4;
 
   // A list of transport methods that this node can use to publish data.
   // This could be:
   // "UDP:X" UDP transport, served on port X over UDP, e.g. "UDP:4682"
   // "TCP:X" TCP transport, served on port X over TCP, e.g. "TCP:4682"
-  repeated string transport_methods = 4;
+  repeated string transport_methods = 5;
 }
