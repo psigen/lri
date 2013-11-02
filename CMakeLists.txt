@@ -2,6 +2,13 @@
 project(LRI)
 cmake_minimum_required(VERSION 2.6)
 
+# Define project version information
+set(LRI_MAJOR_VERSION 0)
+set(LRI_MINOR_VERSION 1)
+set(LRI_PATCH_VERSION 0)
+set(LRI_VERSION
+  ${LRI_MAJOR_VERSION}.${LRI_MINOR_VERSION}.${LRI_PATCH_VERSION})
+
 set(arch ${})
 
 # Compiles externals first
@@ -16,14 +23,16 @@ set(CMAKE_CXX_FLAGS "-mmmx -msse -msse2 -msse3 -msse4.1 ")
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+# Add default include directories 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
+# TODO: Strip out POCO!
 # Add POCO global dependencies
-add_definitions(${poco_DEFINITIONS})
-include_directories(${poco_INCLUDE_DIRS})
+#add_definitions(${poco_DEFINITIONS})
+#include_directories(${poco_INCLUDE_DIRS})
 
 # Set up Protocol Buffers
 find_package(Protobuf REQUIRED)
@@ -36,7 +45,10 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
-# Build our own stuff
 add_executable(udp_server_tester src/test/udp_server_tester.cc)
 add_dependencies(udp_server_tester poco_EXTERNAL)
 target_link_libraries(udp_server_tester ${poco_LIBRARIES})
+
+# Perform unit tests
+enable_testing()
+add_subdirectory(test)
