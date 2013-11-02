@@ -1,23 +1,26 @@
-buildDir=build
+# Build variables
+BUILD_DIR=build
+CMAKE=cmake
 
-$(shell mkdir -p $(buildDir))
+# Build directory
+$(shell mkdir -p $(BUILD_DIR))
 
-#acceptable buildTypes: Release/Debug/Profile
-buildType=Release
+#acceptable BUILD_TYPE: Release/Debug/Profile
+BUILD_TYPE=Release
 
 .SILENT: 
 
 all: compile_all
 
 cmake: CMakeLists.txt
-	cd $(buildDir) && cmake -DCMAKE_BUILD_TYPE=$(buildType) ..
+	cd $(BUILD_DIR) && $(CMAKE) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) ..
 
 compile_all: cmake 
-	$(MAKE) --no-print-directory -C $(buildDir)
+	$(MAKE) --no-print-directory -C $(BUILD_DIR)
 
 clean:
-	$(MAKE) --no-print-directory -C $(buildDir) clean
+	$(MAKE) --no-print-directory -C $(BUILD_DIR) clean
 	
 cleanup_cache:
-	cd $(buildDir) && rm -rf *
+	cd $(BUILD_DIR) && rm -rf *
 

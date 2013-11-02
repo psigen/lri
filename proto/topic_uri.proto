@@ -1,6 +1,6 @@
 package lri;
 
-message TopicPublisher {
+message TopicUri {
   // The "group" to join, in the form "lri://hostname/setname" where hostname
   // is the fully qualified domain name for the computer, and setname is the
   // name of a set on that computer. If the setname is blank, then it is 
@@ -16,9 +16,23 @@ message TopicPublisher {
   // Example: "/base_laser"
   optional string topic_name = 3;
 
+  // LRI-supported basic topic types
+  enum TopicType {
+    // This topic is used for state-replication of some variable
+    STATE = 0;
+    // This topic is used for a RPC for some function
+    SERVICE = 1;
+    // This topic is used for raw data events
+    EVENT = 2;
+  }
+
+  // LRI-specific transport settings that are used to implement internal 
+  // transport overlay mechanisms such as services, state-replication, etc.
+  repeated TopicType type = 4;
+
   // A list of transport methods that this node can use to publish data.
   // This could be:
   // "UDP:X" UDP transport, served on port X over UDP, e.g. "UDP:4682"
   // "TCP:X" TCP transport, served on port X over TCP, e.g. "TCP:4682"
-  repeated string transport_methods = 4;
+  repeated string transport_methods = 5;
 }

@@ -59,9 +59,7 @@ DiscoveryUDP::~DiscoveryUDP() {
   // Terminate UDP multicast listener thread.
 }
 
-void DiscoveryUDP::QueryPublishers(
-  const std::vector<TopicQuery>& topics,
-    std::vector<TopicPublisher>* publishers) {
+void DiscoveryUDP::QueryPublishers(const std::vector<TopicUri>& topics) {
   // Add @topics to subscribed_topics_ to keep track of its publishers.
   // TODO(joydeepb): Check for duplicates.
   subscribed_topics_.insert(subscribed_topics_.end(), topics.begin(),
@@ -73,7 +71,7 @@ void DiscoveryUDP::QueryPublishers(
   // responses.
 }
 
-void DiscoveryUDP::RegisterPublisher(const std::vector<TopicQuery>& topics) {
+void DiscoveryUDP::RegisterPublisher(const std::vector<TopicUri>& topics) {
   // Save the list of topics.
   // TODO(joydeepb): Check for duplicates.
   publishing_topics_.insert(publishing_topics_.end(), topics.begin(),
@@ -81,13 +79,21 @@ void DiscoveryUDP::RegisterPublisher(const std::vector<TopicQuery>& topics) {
   // Announce the topics.
 }
 
-void DiscoveryUDP::UnregisterPublisher(const std::vector<TopicQuery>& topics) {
+void DiscoveryUDP::UnregisterPublisher(const std::vector<TopicUri>& topics) {
   // Remove the topics from the saved list.
   // Send unregister notice to the multicast address.
 }
 
-void DiscoveryUDP::SetCallback(DiscoveryCallback callback) {
-  callback_ = callback;
+void DiscoveryUDP::SetPublishersCallback(DiscoveryCallback callback,
+                                         void* context) {
+  publishers_callback_ = callback;
+  publishers_callback_context_ = context;
+}
+
+void DiscoveryUDP::SetSubscribersCallback(DiscoveryCallback callback,
+                                          void* context) {
+  subscribers_callback_ = callback;
+  subscribers_callback_context_ = context;
 }
 
 }  // namespace lri
