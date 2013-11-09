@@ -11,15 +11,25 @@ set(LRI_VERSION
 
 set(arch ${})
 
+# Add included cmake modules
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+  CACHE
+  PATH "CMake modules search path"
+  )
+
+
 # Compiles externals first
 add_subdirectory(ext)
 
+# Print some output to indicate type of build
 message(STATUS "Compiling LRI sources...")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Arch: ${CMAKE_SYSTEM_PROCESSOR}")
 
+# Set default flags and output paths
 set(CMAKE_CXX_FLAGS "-mmmx -msse -msse2 -msse3 -msse4.1 ")
-
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
