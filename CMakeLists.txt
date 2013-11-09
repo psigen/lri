@@ -1,6 +1,6 @@
 
 project(LRI)
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.8)
 
 # Define project version information
 set(LRI_MAJOR_VERSION 0)
@@ -9,21 +9,21 @@ set(LRI_PATCH_VERSION 0)
 set(LRI_VERSION
   ${LRI_MAJOR_VERSION}.${LRI_MINOR_VERSION}.${LRI_PATCH_VERSION})
 
+# Define current build architecture
 set(arch ${})
 
 # Add included cmake modules
 set(CMAKE_MODULE_PATH
-  ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+  ${CMAKE_MODULE_PATH}
   CACHE
   PATH "CMake modules search path"
   )
 
-
-# Compiles externals first
+# Compile externals first
 add_subdirectory(ext)
 
-# Print some output to indicate type of build
+# Print output to indicate type of build
 message(STATUS "Compiling LRI sources...")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Arch: ${CMAKE_SYSTEM_PROCESSOR}")
@@ -42,11 +42,16 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 # Set up Protocol Buffers
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/proto)
 set(PROTOBUF_IMPORT_DIRS ${PROTOBUF_INCLUDE_DIRS})
+
+# Set up ZeroMQ
+# (TODO: Make this package optional)
+find_package(ZeroMQ REQUIRED)
+include_directories(${ZEROMQ_INCLUDE_DIRS})
+
+# Build core message types
 file(GLOB PROTO_FILES "proto/*.proto")
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
