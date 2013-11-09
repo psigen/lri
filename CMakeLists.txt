@@ -29,11 +29,6 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-# TODO: Strip out POCO!
-# Add POCO global dependencies
-#add_definitions(${poco_DEFINITIONS})
-#include_directories(${poco_INCLUDE_DIRS})
-
 # Set up Protocol Buffers
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
