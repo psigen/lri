@@ -1,53 +1,70 @@
-#include "string.h"
-#include "Poco/Net/SocketAddress.h"
-#include "Poco/Net/MulticastSocket.h"
-#include "Poco/Net/DatagramSocket.h"
-#include "Poco/Timestamp.h"
-#include "Poco/DateTimeFormatter.h"
+#include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <zmq.hpp>
 
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/poll.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <netdb.h>
 #include <unistd.h>
-#include <fcntl.h>
 
-#define PORT_NUMBER 9390
-#define GROUP_ID "225.1.0.37"
+#include <iostream>
 
-void PocoSender() {
-  printf("Poco sender\n");
-  Poco::Net::SocketAddress sa(GROUP_ID, PORT_NUMBER);
-  Poco::Net::DatagramSocket dgs;
-  while(1) {
-    const char msg[] = "Hello Poco!";
-    dgs.sendTo(msg, sizeof(msg), sa);
+using std::string;
+
+namespace {
+string IToA(const int n) {
+  std::stringstream stream;
+  stream << n;
+  return stream.str();
+}
+const int kPortNumber =  9390;
+const string kMulticastAddress = "225.1.0.37";
+const string kEpgmAddress =
+    "epgm://" + kMulticastAddress + ":" + IToA(kPortNumber);
+const string kIpcAddress = "ipc://lri_test.ipc";
+}  // namespace
+
+void ZmqSender() {
+  printf("ZMQ Sender\n");
+  const char message_string[] = "Hello, World!";
+  zmq::message_t message(sizeof(message_string));
+  std::copy(&(message_string[0]), &(message_string[0]) + message.size(),
+            reinterpret_cast<char*>(message.data()));
+  //  Prepare our context and publisher
+  zmq::context_t context (1);
+  zmq::socket_t publisher (context, ZMQ_PUB);
+  publisher.bind(kIpcAddress.c_str());
+  publisher.connect(kEpgmAddress.c_str());
+  while (1) {
+    publisher.send(message.data(), message.size(), 0);
+    printf("Sent \"%s\"\n", message.data());
     sleep(1);
   }
 }
 
-void PocoReceiver() {
-  printf("Poco receiver\n");
-  Poco::Net::SocketAddress sa(GROUP_ID, PORT_NUMBER);
-  Poco::Net::MulticastSocket dgs(
-      Poco::Net::SocketAddress(
-          Poco::Net::IPAddress(), sa.port()
-        )
-  );
-  dgs.joinGroup(sa.host());
-  char buffer[1024];
-  for (;;)
-  {
-    Poco::Net::SocketAddress sender;
-    int n = dgs.receiveFrom(buffer, sizeof(buffer)-1, sender);
-    buffer[n] = '\0';
-    std::cout << sender.toString() << ": " << buffer << std::endl;
+void ZmqReceiver() {
+  printf("ZMQ Receiver\n");
+  zmq::context_t context (1);
+
+  //  Socket to talk to server
+  zmq::socket_t subscriber (context, ZMQ_SUB);
+  subscriber.connect(kIpcAddress.c_str());
+  subscriber.connect(kEpgmAddress.c_str());
+  subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
+  while (1) {
+    zmq::message_t update;
+    subscriber.recv(&update);
+    std::istringstream iss(static_cast<char*>(update.data()));
+    printf("Received \"%s\"\n", iss.str().c_str());
+    //std::cout << "Received \"" << update.data() << "\"\n";
   }
 }
 
@@ -67,8 +84,8 @@ void NativeSender() {
   /* set up destination address */
   memset(&addr,0,sizeof(addr));
   addr.sin_family=AF_INET;
-  addr.sin_addr.s_addr=inet_addr(GROUP_ID);
-  addr.sin_port=htons(PORT_NUMBER);
+  addr.sin_addr.s_addr = inet_addr(kMulticastAddress.c_str());
+  addr.sin_port=htons(kPortNumber);
 
   /* now just sendto() our destination! */
   while (1) {
@@ -107,9 +124,9 @@ void NativeReceiver() {
 
   /* set up destination address */
   memset(&addr,0,sizeof(addr));
-  addr.sin_family=AF_INET;
-  addr.sin_addr.s_addr=htonl(INADDR_ANY); /* N.B.: differs from sender */
-  addr.sin_port=htons(PORT_NUMBER);
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = htonl(INADDR_ANY); /* N.B.: differs from sender */
+  addr.sin_port = htons(kPortNumber);
 
   /* bind to receive address */
   if (bind(fd,(struct sockaddr *) &addr,sizeof(addr)) < 0) {
@@ -118,7 +135,7 @@ void NativeReceiver() {
   }
 
   /* use setsockopt() to request that the kernel join a multicast group */
-  mreq.imr_multiaddr.s_addr=inet_addr(GROUP_ID);
+  mreq.imr_multiaddr.s_addr=inet_addr(kMulticastAddress.c_str());
   mreq.imr_interface.s_addr=htonl(INADDR_ANY);
   if (setsockopt(fd,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq)) < 0) {
     perror("setsockopt");
@@ -151,11 +168,11 @@ int main(int argc, char* argv[])
   const int mode = argv[1][0] - '1';
   switch(mode) {
     case 0:
-      PocoSender();
+      ZmqSender();
       break;
 
     case 1:
-      PocoReceiver();
+      ZmqReceiver();
       break;
 
     case 2:
@@ -164,14 +181,6 @@ int main(int argc, char* argv[])
 
     case 3:
       NativeReceiver();
-      break;
-
-    case 4:
-      PocoSender();
-      break;
-
-    case 5:
-      PocoSender();
       break;
 
   }
