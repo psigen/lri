@@ -1,4 +1,3 @@
-
 project(LRI)
 cmake_minimum_required(VERSION 2.8.8)
 
@@ -55,10 +54,9 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
-add_executable(udp_server_tester src/test/udp_server_tester.cc)
-add_dependencies(udp_server_tester poco_EXTERNAL)
-target_link_libraries(udp_server_tester ${poco_LIBRARIES})
+add_executable(udp_tester src/test/udp_tester.cc)
+target_link_libraries(udp_tester ${ZEROMQ_LIBRARIES})
 
 # Perform unit tests
-enable_testing()
-add_subdirectory(test)
+#enable_testing()
+#add_subdirectory(test)
