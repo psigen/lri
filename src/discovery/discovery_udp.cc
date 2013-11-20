@@ -6,19 +6,21 @@
 #include "Poco/Thread.h"
 
 using std::size_t;
+using Poco::Thread;
+using Poco::Net::DatagramSocket;
 
 namespace {
 
-static const int kLriDiscpveryUdpPort = 9390;
-static const char* kLriDiscpveryUdpGroup = "225.1.0.37";
+static const int kLriDiscoveryUdpPort = 9390;
+static const char* kLriDiscoveryUdpGroup = "225.1.0.37";
 static const Poco::Net::SocketAddress kLriDiscoverySocketAddress(
-    kLriDiscpveryUdpGroup, kLriDiscpveryUdpPort);
+    kLriDiscoveryUdpGroup, kLriDiscoveryUdpPort);
 
 // A sub-class of Poco::Runnable, defining the background thread that will be
 // used to listen on the UDP multicast for subscription
 class DiscoveryUDPFunction : public Poco::Runnable {
  public:
-  DiscoveryUDPFunction() : Poco::Runnable() : run_(true) {}
+  DiscoveryUDPFunction() : Poco::Runnable() , run_(true) {}
   virtual ~DiscoveryUDPFunction() {};
 
  private:
@@ -42,13 +44,11 @@ private:
 
 namespace lri {
 
-typedef Poco::Thread Thread;
-typedef Poco::Net::DatagramSocket DatagramSocket;
-
 DiscoveryUDP::DiscoveryUDP() {
   // Start a new thread to listen on the UDP multicast.
-  discovery_thread_ = new Thread();
-  discovery_thread_->start(new DiscoveryUDPFunction);
+  discovery_thread_ = new Poco::Thread();
+  DiscoveryUDPFunction function;
+  discovery_thread_->start(function);
 
   // Prepare an instance of a multicast datagram socket interface that will be
   // used to publish to the UDP multicast.
@@ -67,8 +67,6 @@ void DiscoveryUDP::QueryPublishers(const std::vector<TopicUri>& topics) {
 
   // Send out multicast QueryTopic packets for every topic.
 
-  // Wait a bit for response from peers on the multicast address and return
-  // responses.
 }
 
 void DiscoveryUDP::RegisterPublisher(const std::vector<TopicUri>& topics) {
@@ -80,8 +78,15 @@ void DiscoveryUDP::RegisterPublisher(const std::vector<TopicUri>& topics) {
 }
 
 void DiscoveryUDP::UnregisterPublisher(const std::vector<TopicUri>& topics) {
-  // Remove the topics from the saved list.
-  // Send unregister notice to the multicast address.
+  for (size_t i = 0; i < topics.size(); ++i) {
+    const std::vector<lri::TopicUri>::iterator publisher_index;// = 
+//        find(publishing_topics_.begin(), publishing_topics_.end(), topics[i]);
+    if (publisher_index != publishing_topics_.end()) {
+      // Remove the topics from the saved list.
+      publishing_topics_.erase(publisher_index);
+      // Send unregister notice to the multicast address.
+    }
+  }
 }
 
 void DiscoveryUDP::SetPublishersCallback(DiscoveryCallback callback,

@@ -40,3 +40,7 @@ target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 add_executable(udp_server_tester src/test/udp_server_tester.cc)
 add_dependencies(udp_server_tester poco_EXTERNAL)
 target_link_libraries(udp_server_tester ${poco_LIBRARIES})
+
+add_library(discovery_udp src/discovery/discovery_udp.cc)
+add_dependencies(discovery_udp poco_EXTERNAL libproto)
+target_link_libraries(discovery_udp ${poco_LIBRARIES} libproto)

@@ -4,17 +4,32 @@
 #ifndef SRC_DISCOVERY_DISCOVERY_UDP_H_
 #define SRC_DISCOVERY_DISCOVERY_UDP_H_
 
+namespace Poco {
+class Thread;
+namespace Net {
+class DatagramSocket;
+}  // namespace Net
+}  // namespace Poco
 
 namespace lri {
-
-class Thread;
-class DatagramSocket;
 
 /**
  * Implements discovery by UDP multicast.
  */
 class DiscoveryUDP : public Discovery {
  public:
+  /**
+   * Default constructor, startus up a background multicast listener thread
+   * and a socket to publish to the multicast address.
+   */
+  DiscoveryUDP();
+
+  /**
+   * Default destructor, shuts down background listener thread and shuts down
+   * network interfaces.
+   */
+  ~DiscoveryUDP();
+
   /**
    * Takes in a vector of topics that the node is interested in, and
    * subsequently calls the registered callback with a list of known publishers.
@@ -79,16 +94,16 @@ class DiscoveryUDP : public Discovery {
   virtual void SetErrorCallback(void* error, void* context);
 
  protected:
-  std::vector<lri::TopicQuery> publishing_topics_;
-  std::vector<lri::TopicQuery> subscribed_topics_;
-  std::vector<lri::TopicPublisher> topic_publishers_;
+  std::vector<lri::TopicUri> publishing_topics_;
+  std::vector<lri::TopicUri> subscribed_topics_;
+  std::vector<lri::TopicUri> topic_publishers_;
 
   DiscoveryCallback publishers_callback_;
   DiscoveryCallback subscribers_callback_;
   void* publishers_callback_context_;
   void* subscribers_callback_context_;
-  Thread* discovery_thread_;
-  DatagramSocket* socket_;
+  Poco::Thread* discovery_thread_;
+  Poco::Net::DatagramSocket* socket_;
 };
 
 }  // namespace lri
