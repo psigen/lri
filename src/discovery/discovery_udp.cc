@@ -1,62 +1,42 @@
 #include "discovery/discovery_udp.h"
-#include "Poco/Net/SocketAddress.h"
-#include "Poco/Net/MulticastSocket.h"
-#include "Poco/Net/DatagramSocket.h"
-#include "Poco/Runnable.h"
-#include "Poco/Thread.h"
+
+#include <thread>
 
 using std::size_t;
+using std::thread;
 
 namespace {
 
 static const int kLriDiscpveryUdpPort = 9390;
 static const char* kLriDiscpveryUdpGroup = "225.1.0.37";
-static const Poco::Net::SocketAddress kLriDiscoverySocketAddress(
-    kLriDiscpveryUdpGroup, kLriDiscpveryUdpPort);
-
-// A sub-class of Poco::Runnable, defining the background thread that will be
-// used to listen on the UDP multicast for subscription
-class DiscoveryUDPFunction : public Poco::Runnable {
- public:
-  DiscoveryUDPFunction() : Poco::Runnable() : run_(true) {}
-  virtual ~DiscoveryUDPFunction() {};
-
- private:
-  virtual void run() {
-    // Until run_ becomes false, wait for messages to be received on UDP
-    // multicast.
-    // When new data is received, parse the proto message and update the list
-    // of topic publishers accordingly.
-  }
-
- public:
-  void Shutdown() {
-    run_ = false;
-  }
-
-private:
-  bool run_;
-};
 
 }  // namespace
 
 namespace lri {
 
-typedef Poco::Thread Thread;
-typedef Poco::Net::DatagramSocket DatagramSocket;
-
-DiscoveryUDP::DiscoveryUDP() {
+DiscoveryUDP::DiscoveryUDP() :
+    run_(true),
+    publishers_callback_context_(NULL),
+    subscribers_callback_context_(NULL),
+    discovery_thread_(NULL),
+    socket_(NULL) {
   // Start a new thread to listen on the UDP multicast.
-  discovery_thread_ = new Thread();
-  discovery_thread_->start(new DiscoveryUDPFunction);
+  discovery_thread_ = new thread(&DiscoveryUDP::DiscoveryThread, this);
 
   // Prepare an instance of a multicast datagram socket interface that will be
   // used to publish to the UDP multicast.
-  socket_ = new DatagramSocket();
+  socket_ = new DiscoverySocket();
 }
 
 DiscoveryUDP::~DiscoveryUDP() {
   // Terminate UDP multicast listener thread.
+  run_ = false;
+  discovery_thread_->join();
+}
+
+void DiscoveryUDP::DiscoveryThread() {
+  while (run_) {
+  }
 }
 
 void DiscoveryUDP::QueryPublishers(const std::vector<TopicUri>& topics) {

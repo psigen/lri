@@ -11,6 +11,9 @@ set(LRI_VERSION
 # Define current build architecture
 set(arch ${})
 
+# Enable C++11 support.
+add_definitions(-std=c++11)
+
 # Add included cmake modules
 set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_SOURCE_DIR}/cmake
@@ -54,6 +57,11 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
+# Build UDB based LRI discovery library
+add_library(lri_udp_discovery src/discovery/discovery_udp.cc)
+target_link_libraries(lri_udp_discovery ${ZEROMQ_LIBRARIES} libproto)
+
+# Build simple tester executables
 add_executable(udp_tester src/test/udp_tester.cc)
 target_link_libraries(udp_tester ${ZEROMQ_LIBRARIES})
 

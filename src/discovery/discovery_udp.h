@@ -4,17 +4,31 @@
 #ifndef SRC_DISCOVERY_DISCOVERY_UDP_H_
 #define SRC_DISCOVERY_DISCOVERY_UDP_H_
 
+namespace std {
+class thread;
+}  // namespace std
 
 namespace lri {
 
-class Thread;
-class DatagramSocket;
+class DiscoverySocket;
 
 /**
  * Implements discovery by UDP multicast.
  */
 class DiscoveryUDP : public Discovery {
  public:
+  /**
+   * Default constructor: does nothing but initialize state.
+   */
+  DiscoveryUDP();
+
+  /**
+   * Default destructor: announces unsubscription to all subscribe topics,
+   * announces removal from all publishing topics, shuts down discovery thread
+   * and cleans up state.
+   */
+  ~DiscoveryUDP();
+
   /**
    * Takes in a vector of topics that the node is interested in, and
    * subsequently calls the registered callback with a list of known publishers.
@@ -78,17 +92,21 @@ class DiscoveryUDP : public Discovery {
   // TODO: Define an error callback interface
   virtual void SetErrorCallback(void* error, void* context);
 
+ private:
+  void DiscoveryThread();
+
  protected:
-  std::vector<lri::TopicQuery> publishing_topics_;
-  std::vector<lri::TopicQuery> subscribed_topics_;
-  std::vector<lri::TopicPublisher> topic_publishers_;
+  bool run_;
+  std::vector<lri::TopicUri> publishing_topics_;
+  std::vector<lri::TopicUri> subscribed_topics_;
+  std::vector<lri::TopicUri> topic_publishers_;
 
   DiscoveryCallback publishers_callback_;
   DiscoveryCallback subscribers_callback_;
   void* publishers_callback_context_;
   void* subscribers_callback_context_;
-  Thread* discovery_thread_;
-  DatagramSocket* socket_;
+  std::thread* discovery_thread_;
+  DiscoverySocket* socket_;
 };
 
 }  // namespace lri
