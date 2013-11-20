@@ -45,7 +45,7 @@ void ZmqSender() {
   publisher.connect(kEpgmAddress.c_str());
   while (1) {
     publisher.send(message.data(), message.size(), 0);
-    printf("Sent \"%s\"\n", message.data());
+    printf("Sent \"%s\"\n", reinterpret_cast<char*>(message.data()));
     sleep(1);
   }
 }

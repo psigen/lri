@@ -54,12 +54,15 @@ include_directories(${ZEROMQ_INCLUDE_DIRS})
 # Build core message types
 file(GLOB PROTO_FILES "proto/*.proto")
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
+add_library(proto ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(proto ${PROTOBUF_LIBRARIES})
 
 # Build UDB based LRI discovery library
-add_library(lri_udp_discovery src/discovery/discovery_udp.cc)
-target_link_libraries(lri_udp_discovery ${ZEROMQ_LIBRARIES} libproto)
+add_library(lri_udp_discovery
+    src/discovery/discovery_udp.cc
+    src/discovery/zmq_discovery_socket.cc)
+add_dependencies(lri_udp_discovery proto)
+target_link_libraries(lri_udp_discovery ${ZEROMQ_LIBRARIES} proto)
 
 # Build simple tester executables
 add_executable(udp_tester src/test/udp_tester.cc)

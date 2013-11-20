@@ -2,6 +2,8 @@
 
 #include <thread>
 
+#include "discovery/zmq_discovery_socket.h"
+
 using std::size_t;
 using std::thread;
 
@@ -19,13 +21,15 @@ DiscoveryUDP::DiscoveryUDP() :
     publishers_callback_context_(NULL),
     subscribers_callback_context_(NULL),
     discovery_thread_(NULL),
-    socket_(NULL) {
+    read_socket_(NULL),
+    write_socket_(NULL) {
   // Start a new thread to listen on the UDP multicast.
   discovery_thread_ = new thread(&DiscoveryUDP::DiscoveryThread, this);
 
-  // Prepare an instance of a multicast datagram socket interface that will be
-  // used to publish to the UDP multicast.
-  socket_ = new DiscoverySocket();
+  // Prepare read and write instances of UDP sockets interface that will be
+  // used to receive from, and publish to the UDP multicast.
+  read_socket_ = new ZmqDiscoveryReadSocket();
+  write_socket_ = new ZmqDiscoveryWriteSocket();
 }
 
 DiscoveryUDP::~DiscoveryUDP() {
@@ -47,8 +51,6 @@ void DiscoveryUDP::QueryPublishers(const std::vector<TopicUri>& topics) {
 
   // Send out multicast QueryTopic packets for every topic.
 
-  // Wait a bit for response from peers on the multicast address and return
-  // responses.
 }
 
 void DiscoveryUDP::RegisterPublisher(const std::vector<TopicUri>& topics) {
@@ -60,8 +62,15 @@ void DiscoveryUDP::RegisterPublisher(const std::vector<TopicUri>& topics) {
 }
 
 void DiscoveryUDP::UnregisterPublisher(const std::vector<TopicUri>& topics) {
-  // Remove the topics from the saved list.
-  // Send unregister notice to the multicast address.
+  for (size_t i = 0; i < topics.size(); ++i) {
+    const std::vector<lri::TopicUri>::iterator publisher_index;// = 
+//        find(publishing_topics_.begin(), publishing_topics_.end(), topics[i]);
+    if (publisher_index != publishing_topics_.end()) {
+      // Remove the topics from the saved list.
+      publishing_topics_.erase(publisher_index);
+      // Send unregister notice to the multicast address.
+    }
+  }
 }
 
 void DiscoveryUDP::SetPublishersCallback(DiscoveryCallback callback,

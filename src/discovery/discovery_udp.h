@@ -10,7 +10,8 @@ class thread;
 
 namespace lri {
 
-class DiscoverySocket;
+class DiscoveryReadSocket;
+class DiscoveryWriteSocket;
 
 /**
  * Implements discovery by UDP multicast.
@@ -18,14 +19,15 @@ class DiscoverySocket;
 class DiscoveryUDP : public Discovery {
  public:
   /**
-   * Default constructor: does nothing but initialize state.
+   * Default constructor, startus up a background multicast listener thread
+   * and a socket to publish to the multicast address.
    */
   DiscoveryUDP();
 
   /**
-   * Default destructor: announces unsubscription to all subscribe topics,
-   * announces removal from all publishing topics, shuts down discovery thread
-   * and cleans up state.
+   * Default destructor, announces unsubscription to all subscribed topics,
+   * announces removal from all publishing topics, shuts down background
+   * listener thread and shuts down network interfaces.
    */
   ~DiscoveryUDP();
 
@@ -106,7 +108,8 @@ class DiscoveryUDP : public Discovery {
   void* publishers_callback_context_;
   void* subscribers_callback_context_;
   std::thread* discovery_thread_;
-  DiscoverySocket* socket_;
+  DiscoveryReadSocket* read_socket_;
+  DiscoveryWriteSocket* write_socket_;
 };
 
 }  // namespace lri
