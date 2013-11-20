@@ -1,46 +1,63 @@
-
 project(LRI)
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.8)
 
+# Define project version information
+set(LRI_MAJOR_VERSION 0)
+set(LRI_MINOR_VERSION 1)
+set(LRI_PATCH_VERSION 0)
+set(LRI_VERSION
+  ${LRI_MAJOR_VERSION}.${LRI_MINOR_VERSION}.${LRI_PATCH_VERSION})
+
+# Define current build architecture
 set(arch ${})
 
-# Compiles externals first
+# Add included cmake modules
+set(CMAKE_MODULE_PATH
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+  ${CMAKE_MODULE_PATH}
+  CACHE
+  PATH "CMake modules search path"
+  )
+
+# Compile externals first
 add_subdirectory(ext)
 
+# Print output to indicate type of build
 message(STATUS "Compiling LRI sources...")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Arch: ${CMAKE_SYSTEM_PROCESSOR}")
 
+# Set default flags and output paths
 set(CMAKE_CXX_FLAGS "-mmmx -msse -msse2 -msse3 -msse4.1 ")
-
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+# Add default include directories 
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-# Add POCO global dependencies
-add_definitions(${poco_DEFINITIONS})
-include_directories(${poco_INCLUDE_DIRS})
-
 # Set up Protocol Buffers
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/proto)
 set(PROTOBUF_IMPORT_DIRS ${PROTOBUF_INCLUDE_DIRS})
+
+# Set up ZeroMQ
+# (TODO: Make this package optional)
+find_package(ZeroMQ REQUIRED)
+include_directories(${ZEROMQ_INCLUDE_DIRS})
+
+# Build core message types
 file(GLOB PROTO_FILES "proto/*.proto")
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 add_library(libproto ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(libproto ${PROTOBUF_LIBRARIES})
 
-# Build our own stuff
-add_executable(udp_server_tester src/test/udp_server_tester.cc)
-add_dependencies(udp_server_tester poco_EXTERNAL)
-target_link_libraries(udp_server_tester ${poco_LIBRARIES})
+add_executable(udp_tester src/test/udp_tester.cc)
+target_link_libraries(udp_tester ${ZEROMQ_LIBRARIES})
 
-add_library(discovery_udp src/discovery/discovery_udp.cc)
-add_dependencies(discovery_udp poco_EXTERNAL libproto)
-target_link_libraries(discovery_udp ${poco_LIBRARIES} libproto)
+# Perform unit tests
+#enable_testing()
+#add_subdirectory(test)
+>>>>>>> 64a142a2925b1470b2497f6eac43a0bfa69472fe

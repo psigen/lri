@@ -20,7 +20,7 @@ compile_all: cmake
 
 clean:
 	$(MAKE) --no-print-directory -C $(BUILD_DIR) clean
-	
+
 cleanup_cache:
 	cd $(BUILD_DIR) && rm -rf *
 
